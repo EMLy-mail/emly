@@ -15,6 +15,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
   import { EventsOn, WindowShow, WindowUnminimise } from '$lib/wailsjs/runtime/runtime';
+  import { SaveAttachment, OpenExplorerForPath } from '$lib/wailsjs/go/main/App';
   import { mailState } from '$lib/stores/mail-state.svelte';
   import * as m from '$lib/paraglide/messages';
   import { dev } from '$app/environment';
@@ -61,19 +62,41 @@
     mailState.clear();
   }
 
-  function onDownloadAttachments() {
+  async function onDownloadAttachments() {
     if (!mailState.currentEmail || !mailState.currentEmail.attachments) return;
 
-    mailState.currentEmail.attachments.forEach((att) => {
-      const base64 = arrayBufferToBase64(att.data);
-      const dataUrl = createDataUrl(att.contentType, base64);
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = att.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+    // Check if custom download behavior is enabled
+    const useCustomDownload = settingsStore.settings.useCustomAttachmentDownload ?? false;
+
+    if (useCustomDownload) {
+      // Use backend SaveAttachment (saves to configured folder and opens Explorer)
+      try {
+        let lastSavedPath = '';
+        for (const att of mailState.currentEmail.attachments) {
+          const base64 = arrayBufferToBase64(att.data);
+          lastSavedPath = await SaveAttachment(att.filename, base64);
+          toast.success(`Saved: ${att.filename}`);
+        }
+        // Open Explorer to show the folder where files were saved
+        if (lastSavedPath) {
+          await OpenExplorerForPath(lastSavedPath);
+        }
+      } catch (err) {
+        toast.error(`Failed to save attachments: ${err}`);
+      }
+    } else {
+      // Use browser default download (downloads to browser's default folder)
+      mailState.currentEmail.attachments.forEach((att) => {
+        const base64 = arrayBufferToBase64(att.data);
+        const dataUrl = createDataUrl(att.contentType, base64);
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = att.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
   }
 
   async function onOpenMail() {

@@ -5,15 +5,17 @@ type SupportedFileTypePreview = "jpg" | "jpeg" | "png";
 interface EMLy_GUI_Settings {
     selectedLanguage: SupportedLanguages = "en" | "it";
     useBuiltinPreview: boolean;
-    useBuiltinPDFViewer?: boolean;
-    previewFileSupportedTypes?: SupportedFileTypePreview[];
-    enableAttachedDebuggerProtection?: boolean;
+    useBuiltinPDFViewer: boolean;
+    previewFileSupportedTypes: SupportedFileTypePreview[];
+    enableAttachedDebuggerProtection: boolean;
     useDarkEmailViewer?: boolean;
     enableUpdateChecker?: boolean;
     musicInspirationEnabled?: boolean;
     reduceMotion?: boolean;
-    theme?: "light" | "dark";
-    increaseWindowButtonsContrast?: boolean;
+    theme: "light" | "dark";
+    increaseWindowButtonsContrast: boolean;
+    exportAttachmentFolder?: string;
+    useCustomAttachmentDownload?: boolean;
 }
 
 type SupportedLanguages = "en" | "it";

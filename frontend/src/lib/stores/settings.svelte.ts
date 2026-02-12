@@ -18,6 +18,8 @@ const defaults: EMLy_GUI_Settings = {
     reduceMotion: false,
     theme: "dark",
     increaseWindowButtonsContrast: false,
+    exportAttachmentFolder: "",
+    useCustomAttachmentDownload: false,
 };
 
 class SettingsStore {

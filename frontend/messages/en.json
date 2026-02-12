@@ -218,5 +218,11 @@
 	"pdf_error_no_data_desc": "No PDF data provided. Please open this window from the main EMLy application.",
 	"pdf_error_timeout": "Timeout loading PDF. The worker might have failed to initialize.",
 	"pdf_error_parsing": "Error parsing PDF: ",
-	"pdf_error_rendering": "Error rendering page: "
+	"pdf_error_rendering": "Error rendering page: ",
+	"settings_custom_download_label": "Custom Attachment Download",
+	"settings_custom_download_hint": "Save attachments to a custom folder and open Explorer automatically",
+	"settings_custom_download_info": "Info: When enabled, attachments will be saved to the folder configured below (or WEBVIEW2_DOWNLOAD_PATH if not set) and Windows Explorer will open to show the file. When disabled, uses browser's default download behavior.",
+	"settings_export_folder_label": "Select a folder to save exported attachments",
+	"settings_export_folder_hint": "Choose a default location for saving attachments that you export from emails (instead of the Downloads folder)",
+	"settings_select_folder_button": "Select folder"
 }

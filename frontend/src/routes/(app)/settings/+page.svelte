@@ -6,7 +6,7 @@
   import { Label } from "$lib/components/ui/label";
   import { Separator } from "$lib/components/ui/separator";
   import { Switch } from "$lib/components/ui/switch";
-  import { ChevronLeft, Flame, Download, Upload, RefreshCw, CheckCircle2, AlertCircle, Sun, Moon } from "@lucide/svelte";
+  import { ChevronLeft, Flame, Download, Upload, RefreshCw, CheckCircle2, AlertCircle, Sun, Moon, FolderArchive } from "@lucide/svelte";
   import type { EMLy_GUI_Settings } from "$lib/types";
   import { toast } from "svelte-sonner";
   import { It, Us } from "svelte-flags";
@@ -25,8 +25,9 @@
   import { setLocale } from "$lib/paraglide/runtime";
   import { mailState } from "$lib/stores/mail-state.svelte.js";
   import { dev } from '$app/environment';
-  import { ExportSettings, ImportSettings, CheckForUpdates, DownloadUpdate, InstallUpdate, GetUpdateStatus, SetUpdateCheckerEnabled } from "$lib/wailsjs/go/main/App";
+  import { ExportSettings, ImportSettings, CheckForUpdates, DownloadUpdate, InstallUpdate, SetUpdateCheckerEnabled, ShowOpenFolderDialog, GetExportAttachmentFolder, SetExportAttachmentFolder } from "$lib/wailsjs/go/main/App";
   import { EventsOn, EventsOff } from "$lib/wailsjs/runtime/runtime";
+  import Input from "$lib/components/ui/input/input.svelte";
 
   let { data } = $props();
   let config = $derived(data.config);
@@ -44,6 +45,8 @@
     reduceMotion: false,
     theme: "dark",
     increaseWindowButtonsContrast: false,
+    exportAttachmentFolder: "",
+    useCustomAttachmentDownload: false,
   };
 
   async function setLanguage(
@@ -82,6 +85,8 @@
       reduceMotion: s.reduceMotion ?? defaults.reduceMotion ?? false,
       theme: s.theme || defaults.theme || "light",
       increaseWindowButtonsContrast: s.increaseWindowButtonsContrast ?? defaults.increaseWindowButtonsContrast ?? false,
+      exportAttachmentFolder: s.exportAttachmentFolder || defaults.exportAttachmentFolder || "",
+      useCustomAttachmentDownload: s.useCustomAttachmentDownload ?? defaults.useCustomAttachmentDownload ?? false,
     };
   }
 
@@ -94,6 +99,8 @@
       !!a.useDarkEmailViewer === !!b.useDarkEmailViewer &&
       !!a.enableUpdateChecker === !!b.enableUpdateChecker &&
       !!a.reduceMotion === !!b.reduceMotion &&
+      !!a.exportAttachmentFolder === !!b.exportAttachmentFolder &&
+      !!a.useCustomAttachmentDownload === !!b.useCustomAttachmentDownload &&
       (a.theme ?? "light") === (b.theme ?? "light") &&
       !!a.increaseWindowButtonsContrast === !!b.increaseWindowButtonsContrast &&
       JSON.stringify(a.previewFileSupportedTypes?.sort()) ===
@@ -142,6 +149,7 @@
         sessionStorage.removeItem("debugWindowInSettings");
         dangerZoneEnabled.set(false);
         LogDebug("Reset danger zone setting to false.");
+        await SetExportAttachmentFolder("");
       } catch {
         toast.error(m.settings_toast_reset_failed());
         return;
@@ -195,10 +203,10 @@
   });
 
   // Sync update checker setting to backend config.ini
-  let previousUpdateCheckerEnabled = form.enableUpdateChecker;
   $effect(() => {
     (async () => {
       if (!browser) return;
+      let previousUpdateCheckerEnabled = form.enableUpdateChecker;
       if (form.enableUpdateChecker !== previousUpdateCheckerEnabled) {
         try {
           await SetUpdateCheckerEnabled(form.enableUpdateChecker ?? true);
@@ -220,6 +228,52 @@
     }
     previousTheme = form.theme;
   });
+
+  // Load export attachment folder from config.ini on startup
+  $effect(() => {
+    if (!browser) return;
+    (async () => {
+      try {
+        const configFolder = await GetExportAttachmentFolder();
+        if (configFolder && configFolder.trim() !== "") {
+          form.exportAttachmentFolder = configFolder;
+          // Also update lastSaved to avoid triggering unsaved changes
+          lastSaved = { ...lastSaved, exportAttachmentFolder: configFolder };
+        }
+      } catch (err) {
+        console.error("Failed to load export folder from config:", err);
+      }
+    })();
+  });
+
+  async function openFolderDialog(): Promise<string | null> {
+    try {
+      const result = await ShowOpenFolderDialog();
+      if (result) {
+        return result;
+      }
+    } catch (err) {
+      console.error("Failed to open folder dialog:", err);
+      toast.error("Failed to open folder dialog.");
+    }
+    return null;
+  }
+
+  async function selectExportFolder() {
+    const folder = await openFolderDialog();
+    if (folder) {
+      // Save to form state
+      form.exportAttachmentFolder = folder;
+      // Save to config.ini
+      try {
+        await SetExportAttachmentFolder(folder);
+        toast.success("Export folder updated!");
+      } catch (err) {
+        console.error("Failed to save export folder:", err);
+        toast.error("Failed to save export folder to config.");
+      }
+    }
+  }
 
   async function exportSettings() {
     try {
@@ -344,7 +398,7 @@
   });
 </script>
 
-<div class="min-h-[calc(100vh-1rem)] bg-gradient-to-b from-background to-muted/30">
+<div class="min-h-[calc(100vh-1rem)] bg-linear-to-b from-background to-muted/30">
   <div
     class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 sm:px-6 sm:py-10 opacity-80"
   >
@@ -692,6 +746,61 @@
             {m.settings_preview_pdf_builtin_info()}
           </p>
         </div>
+
+        <Separator />
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between gap-4 rounded-lg border bg-card p-4">
+            <div>
+              <div class="font-medium">{m.settings_custom_download_label()}</div>
+              <div class="text-sm text-muted-foreground">
+                {m.settings_custom_download_hint()}
+              </div>
+            </div>
+            <Switch
+              id="use-custom-attachment-download"
+              bind:checked={form.useCustomAttachmentDownload}
+              class="cursor-pointer hover:cursor-pointer"
+            />
+          </div>
+          <p class="text-xs text-muted-foreground mt-2">
+            {m.settings_custom_download_info()}
+          </p>
+        </div>
+
+        {#if form.useCustomAttachmentDownload}
+        <Separator />
+
+        <div class="space-y-3">
+          <div class="rounded-lg border bg-card p-4 space-y-3">
+            <div>
+              <div class="font-medium">
+                {m.settings_export_folder_label()}
+              </div>
+              <div class="text-sm text-muted-foreground">
+                {m.settings_export_folder_hint()}
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <Input
+                type="text"
+                placeholder="%USERPROFILE%\Documents\EMLy_Attachments"
+                class="flex-1"
+                readonly
+                bind:value={form.exportAttachmentFolder}
+              />
+              <Button
+                variant="outline"
+                class="cursor-pointer hover:cursor-pointer"
+                onclick={selectExportFolder}
+              >
+                <FolderArchive class="size-4 mr-2" />
+                {m.settings_select_folder_button()}
+              </Button>
+            </div>
+          </div>
+        </div>
+        {/if}
       </Card.Content>
     </Card.Root>
 

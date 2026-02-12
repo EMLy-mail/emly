@@ -3,7 +3,7 @@
 package main
 
 import (
-	"emly/backend/utils/mail"
+	internal "emly/backend/utils/mail"
 )
 
 // =============================================================================
@@ -85,4 +85,51 @@ func (a *App) ReadMSGOSS(filePath string) (*internal.EmailData, error) {
 //   - error: Any dialog errors
 func (a *App) ShowOpenFileDialog() (string, error) {
 	return internal.ShowFileDialog(a.ctx)
+}
+
+func (a *App) ShowOpenFolderDialog() (string, error) {
+	return internal.ShowFolderDialog(a.ctx)
+}
+
+// SaveAttachment saves an attachment to the configured download folder.
+// Uses EXPORT_ATTACHMENT_FOLDER from config.ini if set,
+// otherwise falls back to WEBVIEW2_DOWNLOAD_PATH, then to default Downloads folder.
+// After saving, opens Windows Explorer to show the saved file.
+//
+// Parameters:
+//   - filename: The name to save the file as
+//   - base64Data: The base64-encoded attachment data
+//
+// Returns:
+//   - string: The full path where the file was saved
+//   - error: Any file system errors
+func (a *App) SaveAttachment(filename string, base64Data string) (string, error) {
+	// Try to get configured export folder first
+	folderPath := a.GetExportAttachmentFolder()
+
+	// If not set, try to get WEBVIEW2_DOWNLOAD_PATH from config
+	if folderPath == "" {
+		config := a.GetConfig()
+		if config != nil && config.EMLy.WebView2DownloadPath != "" {
+			folderPath = config.EMLy.WebView2DownloadPath
+		}
+	}
+
+	savedPath, err := internal.SaveAttachmentToFolder(filename, base64Data, folderPath)
+	if err != nil {
+		return "", err
+	}
+
+	return savedPath, nil
+}
+
+// OpenExplorerForPath opens Windows Explorer to show the specified file or folder.
+//
+// Parameters:
+//   - path: The full path to open in Explorer
+//
+// Returns:
+//   - error: Any execution errors
+func (a *App) OpenExplorerForPath(path string) error {
+	return internal.OpenFileExplorer(path)
 }

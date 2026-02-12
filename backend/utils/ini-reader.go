@@ -22,6 +22,9 @@ type EMLyConfig struct {
 	UpdateCheckEnabled       string `ini:"UPDATE_CHECK_ENABLED"`
 	UpdatePath               string `ini:"UPDATE_PATH"`
 	UpdateAutoCheck          string `ini:"UPDATE_AUTO_CHECK"`
+	WebView2UserDataPath     string `ini:"WEBVIEW2_USERDATA_PATH"`
+	WebView2DownloadPath     string `ini:"WEBVIEW2_DOWNLOAD_PATH"`
+	ExportAttachmentFolder   string `ini:"EXPORT_ATTACHMENT_FOLDER"`
 }
 
 // LoadConfig reads the config.ini file at the given path and returns a Config struct

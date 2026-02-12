@@ -218,6 +218,12 @@
 	"pdf_error_rendering": "Errore nel rendering della pagina: ",
 	"mail_download_btn_label": "Scarica",
 	"mail_download_btn_title": "Scarica",
-	"mail_download_btn_text": "Scarica"
-
+	"mail_download_btn_text": "Scarica",
+	"settings_custom_download_label": "Download Personalizzato Allegati",
+	"settings_custom_download_hint": "Salva gli allegati in una cartella personalizzata e apri automaticamente Esplora Risorse",
+	"settings_custom_download_info": "Info: Quando abilitato, gli allegati verranno salvati nella cartella configurata di seguito (o WEBVIEW2_DOWNLOAD_PATH se non impostata) e Windows Explorer si aprirà per mostrare il file. Quando disabilitato, usa il comportamento di download predefinito del browser.",
+	"settings_export_folder_label": "Seleziona una cartella per salvare gli allegati esportati",
+	"settings_export_folder_hint": "Scegli una posizione predefinita per salvare gli allegati che esporti dalle email (invece della cartella Download)",
+	"settings_select_folder_button": "Seleziona cartella"
 }
+
