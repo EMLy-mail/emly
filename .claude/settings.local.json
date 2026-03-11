@@ -17,7 +17,27 @@
       "Bash(bunx shadcn-svelte@latest:*)",
       "Bash(printf y\\\\nn\\\\n:*)",
       "Bash(xargs grep:*)",
-      "Bash(go get gopkg.in/natefinch/lumberjack.v2)"
+      "Bash(go get gopkg.in/natefinch/lumberjack.v2)",
+      "WebFetch(domain:v3alpha.wails.io)",
+      "Bash(ls -la /c/Users/User/Desktop/Gits/emly/*.json 2>/dev/null || echo \"No .json files in root\")",
+      "Bash(grep -r \"runtime\\\\.\" /c/Users/User/Desktop/Gits/emly/*.go --include=\"*.go\" | head -30)",
+      "Bash(find /c/Users/User/Desktop/Gits/emly/frontend/src/lib/wailsjs -type f -name \"*.ts\" 2>/dev/null | head -20)",
+      "Bash(ls -1 /c/Users/User/Desktop/Gits/emly/*.go /c/Users/User/Desktop/Gits/emly/*.json /c/Users/User/Desktop/Gits/emly/*.md /c/Users/User/Desktop/Gits/emly/*.ini 2>/dev/null | xargs -I {} basename {})",
+      "WebFetch(domain:wails.io)",
+      "Bash(go get:*)",
+      "Bash(cd frontend:*)",
+      "Bash(find /c/Users/User/Desktop/Gits/emly/frontend -path \"*/@wailsio/runtime*\" -name \"*.js\" 2>/dev/null | head -10)",
+      "Bash(find /c/Users/User/Desktop/Gits/emly/frontend/node_modules/@wailsio/runtime/dist -name \"*.js\" 2>/dev/null | head -20\ncat /c/Users/User/Desktop/Gits/emly/frontend/node_modules/@wailsio/runtime/package.json 2>/dev/null | head -30)",
+      "Bash(cat /c/Users/User/Desktop/Gits/emly/frontend/node_modules/@wailsio/runtime/types/events.d.ts 2>/dev/null\ncat /c/Users/User/Desktop/Gits/emly/frontend/node_modules/@wailsio/runtime/types/window.d.ts 2>/dev/null | head -60)",
+      "Bash(cd /c/Users/User/Desktop/Gits/emly/frontend && bun run build 2>&1 | tail -20)",
+      "Bash(bun run:*)",
+      "Read(//c/Users/User/Desktop/Gits/emly/frontend/$\\(go env GOPATH\\)/pkg/mod/github.com/wailsapp/wails/v3@v3.0.0-alpha.74/examples/**)",
+      "Bash(/dev/null -not -path */build/*)",
+      "Bash(cd \"C:/Users/User/Desktop/Gits/emly\" && wails3 dev --help 2>&1 | head -30)",
+      "Bash(cd \"C:/Users/User/Desktop/Gits/emly\" && timeout 5 wails3 dev 2>&1 || true)",
+      "Bash(xargs cat:*)",
+      "Bash(find \"C:/Users/User/Desktop/Gits/emly/frontend/node_modules/@wailsio/runtime\" -name \"vite*\" 2>/dev/null | head -10)",
+      "Bash(grep -n \"FrontendLog\" \"C:/Users/User/Desktop/Gits/emly/\"*.go \"C:/Users/User/Desktop/Gits/emly/backend/\"**/*.go 2>/dev/null)"
     ]
   }
 }

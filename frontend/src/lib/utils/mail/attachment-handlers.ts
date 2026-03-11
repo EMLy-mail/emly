@@ -27,6 +27,8 @@ export async function openPDFAttachment(
   base64Data: string,
   filename: string
 ): Promise<AttachmentHandlerResult> {
+  console.log('Opening PDF attachment:', filename);
+  console.log("can use built-in viewer?", settingsStore.settings.useBuiltinPDFViewer);
   try {
     if (settingsStore.settings.useBuiltinPDFViewer) {
       await OpenPDFWindow(base64Data, filename);

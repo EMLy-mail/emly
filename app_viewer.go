@@ -9,9 +9,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
 	"strings"
+	"syscall"
 	"time"
+
+	pkglogger "emly/backend/logger"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // =============================================================================
@@ -236,6 +240,25 @@ func (a *App) OpenPDFWindow(base64Data string, filename string) error {
 		a.openPDFsMux.Unlock()
 		return fmt.Errorf("failed to get executable path: %w", err)
 	}
+	pkglogger.Debug("OpenPDFWindow: launching viewer", "executable", exe, "tempFile", tempFile) // Debug log to verify paths
+
+	window := a.app.Window.NewWithOptions(application.WebviewWindowOptions{
+		Title:       "My Application",
+		Width:       1200,
+		Height:      800,
+		X:           100, // Position from left
+		Y:           100, // Position from top
+		AlwaysOnTop: false,
+		Frameless:   true,
+		Hidden:      false,
+		MinWidth:    400,
+		MinHeight:   300,
+		MaxWidth:    1920,
+		MaxHeight:   1080,
+		URL:         "/pdf",
+	})
+
+	window.Show()
 
 	cmd := exec.Command(exe, "--view-pdf="+tempFile)
 	if err := cmd.Start(); err != nil {

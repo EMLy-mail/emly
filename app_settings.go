@@ -10,7 +10,7 @@ import (
 
 	"emly/backend/utils"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // =============================================================================
@@ -32,16 +32,13 @@ import (
 //   - error: Error if dialog or file operations fail
 func (a *App) ExportSettings(settingsJSON string) (string, error) {
 	// Open save dialog with JSON filter
-	savePath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		DefaultFilename: "emly_settings.json",
-		Title:           "Export Settings",
-		Filters: []runtime.FileFilter{
-			{
-				DisplayName: "JSON Files (*.json)",
-				Pattern:     "*.json",
-			},
+	savePath, err := a.app.Dialog.SaveFileWithOptions(&application.SaveFileDialogOptions{
+		Title:    "Export Settings",
+		Filename: "emly_settings.json",
+		Filters: []application.FileFilter{
+			{DisplayName: "JSON Files (*.json)", Pattern: "*.json"},
 		},
-	})
+	}).PromptForSingleSelection()
 	if err != nil {
 		return "", fmt.Errorf("failed to open save dialog: %w", err)
 	}
@@ -74,15 +71,12 @@ func (a *App) ExportSettings(settingsJSON string) (string, error) {
 //   - error: Error if dialog or file operations fail
 func (a *App) ImportSettings() (string, error) {
 	// Open file dialog with JSON filter
-	openPath, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+	openPath, err := a.app.Dialog.OpenFileWithOptions(&application.OpenFileDialogOptions{
 		Title: "Import Settings",
-		Filters: []runtime.FileFilter{
-			{
-				DisplayName: "JSON Files (*.json)",
-				Pattern:     "*.json",
-			},
+		Filters: []application.FileFilter{
+			{DisplayName: "JSON Files (*.json)", Pattern: "*.json"},
 		},
-	})
+	}).PromptForSingleSelection()
 	if err != nil {
 		return "", fmt.Errorf("failed to open file dialog: %w", err)
 	}

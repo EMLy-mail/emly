@@ -4,19 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-EMLy is a Windows desktop email viewer for `.eml` and `.msg` files built with Wails v2 (Go backend + SvelteKit/Svelte 5 frontend). It supports viewing email content, attachments, and Italian PEC (Posta Elettronica Certificata) certified emails.
+EMLy is a Windows desktop email viewer for `.eml` and `.msg` files built with Wails v3 (Go backend + SvelteKit/Svelte 5 frontend). It supports viewing email content, attachments, and Italian PEC (Posta Elettronica Certificata) certified emails.
 
 ## Build Commands
 
 ```bash
 # Development mode with hot-reload
-wails dev
+wails3 dev
 
 # Production build (outputs to build/bin/EMLy.exe)
-wails build
+wails3 build
 
 # Build for specific platform
-wails build -platform windows/amd64
+wails3 build -platform windows/amd64
 
 # Frontend type checking
 cd frontend && bun run check

@@ -1,0 +1,57 @@
+version: '3'
+
+tasks:
+  go:mod:tidy:
+    summary: Runs `go mod tidy`
+    internal: true
+    cmds:
+      - go mod tidy
+
+  install:frontend:deps:
+    summary: Install frontend dependencies
+    dir: frontend
+    sources:
+      - package.json
+    generates:
+      - node_modules/.modules.yaml
+    preconditions:
+      - sh: bun --version
+        msg: "Looks like bun isn't installed. Install it from https://bun.sh"
+    cmds:
+      - bun install
+
+  build:frontend:
+    label: build:frontend (DEV={{.DEV}})
+    summary: Build the frontend project
+    dir: frontend
+    sources:
+      - "**/*"
+      - exclude: node_modules/**/*
+    generates:
+      - build/**/*
+    deps:
+      - task: install:frontend:deps
+    cmds:
+      - bun run {{.BUILD_COMMAND}}
+    env:
+      PRODUCTION: '{{if eq .DEV "true"}}false{{else}}true{{end}}'
+    vars:
+      BUILD_COMMAND: '{{if eq .DEV "true"}}build:dev{{else}}build{{end}}'
+
+  dev:frontend:
+    summary: Runs the frontend in development mode
+    dir: frontend
+    deps:
+      - task: install:frontend:deps
+    cmds:
+      - bun run dev -- --port {{.VITE_PORT}} --strictPort
+
+  generate:icons:
+    summary: Generates Windows .ico file from appicon.png
+    dir: build
+    sources:
+      - appicon.png
+    generates:
+      - windows/icon.ico
+    cmds:
+      - wails3 generate icons -input appicon.png -windowsfilename windows/icon.ico

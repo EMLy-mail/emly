@@ -1,5 +1,5 @@
 // Package main provides the core EMLy application.
-// EMLy is a desktop email viewer for .eml and .msg files built with Wails v2.
+// EMLy is a desktop email viewer for .eml and .msg files built with Wails v3 (v3.0.0-alpha.74).
 package main
 
 import (
@@ -16,7 +16,7 @@ import (
 	pkglogger "emly/backend/logger"
 	"emly/backend/utils"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // =============================================================================
@@ -27,12 +27,12 @@ import (
 // provides methods that are exposed to the frontend via Wails bindings.
 //
 // The struct manages:
-//   - Application context for Wails runtime calls
+//   - Application reference for Wails runtime calls
 //   - File paths for startup and currently loaded emails
 //   - Tracking of open viewer windows to prevent duplicates
 type App struct {
-	// ctx is the Wails application context, used for runtime calls like dialogs
-	ctx context.Context
+	// app is the Wails v3 application reference, used for runtime calls like dialogs
+	app *application.App
 
 	// StartupFilePath is set when the app is launched with an email file argument
 	StartupFilePath string
@@ -66,8 +66,9 @@ type App struct {
 // NewApp creates and initializes a new App instance.
 // userAgent is injected into the shared HTTP client so every outgoing
 // request identifies itself as "EMLy/<version>".
-func NewApp(userAgent string) *App {
+func NewApp(userAgent string, wailsApp *application.App) *App {
 	return &App{
+		app:        wailsApp,
 		openImages: make(map[string]bool),
 		openPDFs:   make(map[string]bool),
 		openEMLs:   make(map[string]bool),
@@ -93,17 +94,14 @@ func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error
 	return t.base.RoundTrip(req)
 }
 
-// startup is called by Wails when the application starts.
-// It receives the application context which is required for Wails runtime calls.
+// ServiceStartup is called by Wails when the service starts.
+// It receives the application context and service options.
 //
 // This method:
-//   - Saves the context for later use
 //   - Syncs CurrentMailFilePath with StartupFilePath if a file was opened via CLI
 //   - Applies LOG_LEVEL from config.ini
 //   - Logs the startup mode (main app vs viewer window)
-func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
-
+func (a *App) ServiceStartup(ctx context.Context, options application.ServiceOptions) error {
 	// Sync CurrentMailFilePath with StartupFilePath if a file was opened via command line
 	if a.StartupFilePath != "" {
 		a.CurrentMailFilePath = a.StartupFilePath
@@ -155,26 +153,22 @@ func (a *App) startup(ctx context.Context) {
 						"current", status.CurrentVersion,
 						"available", status.AvailableVersion,
 					)
-					runtime.EventsEmit(ctx, "update:available", status)
+					a.app.Event.Emit("update:available", status)
 				} else {
 					pkglogger.Info("no updates available")
 				}
 			}
 		}()
 	}
-}
 
-// shutdown is called by Wails when the application is closing.
-// Used for cleanup operations.
-func (a *App) shutdown(ctx context.Context) {
-	// Best-effort cleanup - currently no resources require explicit cleanup
+	return nil
 }
 
 // QuitApp terminates the application.
 // It first calls Wails Quit to properly close the window,
 // then forces an exit with a specific code.
 func (a *App) QuitApp() {
-	runtime.Quit(a.ctx)
+	a.app.Quit()
 	// Exit with code 133 (133 + 5 = 138, SIGTRAP-like exit)
 	os.Exit(133)
 }
@@ -205,7 +199,7 @@ func (a *App) RestartApp() error {
 	}
 
 	pkglogger.Info("RestartApp: scheduled restart, quitting current instance")
-	runtime.Quit(a.ctx)
+	a.app.Quit()
 	return nil
 }
 

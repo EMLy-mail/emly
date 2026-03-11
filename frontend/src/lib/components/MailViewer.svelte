@@ -101,6 +101,7 @@
   }
 
   async function handleOpenPDF(base64Data: string, filename: string) {
+    console.log('Opening PDF attachment:', filename);
     await openPDFAttachment(base64Data, filename);
   }
 

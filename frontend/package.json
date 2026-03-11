@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@types/html2canvas": "^1.0.0",
+    "@wailsio/runtime": "^3.0.0-alpha.79",
     "dompurify": "^3.3.1",
     "html2canvas": "^1.4.1",
     "pdfjs-dist": "^5.4.624",

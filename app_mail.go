@@ -10,6 +10,8 @@ import (
 
 	pkglogger "emly/backend/logger"
 	"emly/backend/utils/mail"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // =============================================================================
@@ -124,7 +126,14 @@ func (a *App) ReadAuto(filePath string) (result *internal.EmailData, err error) 
 
 // ShowOpenFileDialog displays the system file picker dialog filtered for email files.
 func (a *App) ShowOpenFileDialog() (string, error) {
-	return internal.ShowFileDialog(a.ctx)
+	filters := make([]application.FileFilter, 0, len(internal.EmailFilters))
+	for _, f := range internal.EmailFilters {
+		filters = append(filters, application.FileFilter{DisplayName: f.DisplayName, Pattern: f.Pattern})
+	}
+	return a.app.Dialog.OpenFileWithOptions(&application.OpenFileDialogOptions{
+		Title:   "Select Email file",
+		Filters: filters,
+	}).PromptForSingleSelection()
 }
 
 // =============================================================================

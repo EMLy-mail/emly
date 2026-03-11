@@ -13,7 +13,7 @@ import (
 
 	"emly/backend/utils"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // =============================================================================
@@ -130,16 +130,13 @@ func (a *App) SaveScreenshotAs() (string, error) {
 	}
 
 	// Open save dialog with PNG filter
-	savePath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		DefaultFilename: result.Filename,
-		Title:           "Save Screenshot",
-		Filters: []runtime.FileFilter{
-			{
-				DisplayName: "PNG Images (*.png)",
-				Pattern:     "*.png",
-			},
+	savePath, err := a.app.Dialog.SaveFileWithOptions(&application.SaveFileDialogOptions{
+		Title:    "Save Screenshot",
+		Filename: result.Filename,
+		Filters: []application.FileFilter{
+			{DisplayName: "PNG Images (*.png)", Pattern: "*.png"},
 		},
-	})
+	}).PromptForSingleSelection()
 	if err != nil {
 		return "", fmt.Errorf("failed to open save dialog: %w", err)
 	}

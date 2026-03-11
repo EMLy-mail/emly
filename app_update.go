@@ -19,8 +19,6 @@ import (
 	"unsafe"
 
 	pkglogger "emly/backend/logger"
-
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // =============================================================================
@@ -80,7 +78,7 @@ func (a *App) CheckForUpdates() (UpdateStatus, error) {
 	updateStatus.Checking = true
 	updateStatus.ErrorMessage = ""
 	updateStatus.LastCheckTime = time.Now().Format("2006-01-02 15:04:05")
-	runtime.EventsEmit(a.ctx, "update:status", updateStatus)
+	a.app.Event.Emit("update:status", updateStatus)
 
 	// Get current version from config
 	config := a.GetConfig()
@@ -209,11 +207,11 @@ func (a *App) DownloadUpdate() (string, error) {
 	updateStatus.Downloading = true
 	updateStatus.DownloadProgress = 0
 	updateStatus.ErrorMessage = ""
-	runtime.EventsEmit(a.ctx, "update:status", updateStatus)
+	a.app.Event.Emit("update:status", updateStatus)
 
 	defer func() {
 		updateStatus.Downloading = false
-		runtime.EventsEmit(a.ctx, "update:status", updateStatus)
+		a.app.Event.Emit("update:status", updateStatus)
 	}()
 
 	// Get config
@@ -325,7 +323,7 @@ func (a *App) copyFileWithProgress(src, dst string) error {
 			progress := int((copiedSize * 100) / totalSize)
 			if progress != updateStatus.DownloadProgress {
 				updateStatus.DownloadProgress = progress
-				runtime.EventsEmit(a.ctx, "update:status", updateStatus)
+				a.app.Event.Emit("update:status", updateStatus)
 			}
 		}
 		if err == io.EOF {
@@ -390,7 +388,7 @@ func (a *App) InstallUpdate(quitAfterLaunch bool) error {
 
 	if quitAfterLaunch {
 		time.Sleep(500 * time.Millisecond)
-		runtime.Quit(a.ctx)
+		a.app.Quit()
 	}
 
 	return nil
@@ -573,7 +571,7 @@ func (a *App) InstallUpdateSilentFromPath(smbPath string) error {
 	pkglogger.Info("installer batch launched, quitting EMLy")
 
 	time.Sleep(500 * time.Millisecond)
-	runtime.Quit(a.ctx)
+	a.app.Quit()
 
 	return nil
 }

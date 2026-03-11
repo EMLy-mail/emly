@@ -1,5 +1,8 @@
 # Changelog EMLy
 
+## 1.6.5 (2026-03-11)
+1) Migrazione del framework da Wails v2 a Wails v3 (v3.0.0-alpha.74): aggiornate tutte le API backend (dialoghi, eventi, ciclo di vita servizio) e frontend (runtime @wailsio/runtime, bindings via Call.ByName).
+
 ## 1.6.5 (2026-03-10)
 1) Rimosso il recupero dell'IP esterno (api.ipify.org) dalla raccolta informazioni di sistema nel report bug.
 2) Rimosso il recupero delle informazioni GPU dalla raccolta informazioni di sistema nel report bug.
