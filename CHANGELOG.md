@@ -1,4 +1,8 @@
 # Changelog EMLy
+
+## 1.7.4 (2026-05-21)
+1) Aggiunto supporto a `detailedReleaseNotes` nel file `version.json`: ogni versione può ora specificare un `severityType` (`patch`, `feature`, `breaking`, `security`) e una descrizione localizzata (`en`/`it`). Il tipo di severità viene mostrato come badge nell'intestazione della sezione aggiornamenti nelle Impostazioni e cambia il colore del pannello di download di conseguenza. Se il tipo è `security`, viene mostrato automaticamente un AlertDialog che suggerisce l'aggiornamento immediato.
+
 ## 1.7.3 (2026-05-20)
 1) Sistemato un critico bug di avvio, quando l'utente avviava EMLy tramite un .EML, andava in crash la WebView. Causato dall'uso di $effect invece che onMount.
 

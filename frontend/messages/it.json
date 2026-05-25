@@ -296,5 +296,13 @@
   "settings_danger_tab_mode_info": "Info: Quando abilitato, l'apertura di una nuova email creerà una nuova scheda invece di sostituire la vista corrente. Le schede possono essere chiuse singolarmente.",
   "tabs_close_tab_label": "Chiudi scheda",
   "mail_link_disabled_toast": "I link nelle email sono disabilitati per sicurezza. Vuoi abilitarli?",
-  "mail_link_disabled_enable": "Abilita"
+  "mail_link_disabled_enable": "Abilita",
+  "settings_updates_severity_patch": "Patch",
+  "settings_updates_severity_feature": "Funzionalità",
+  "settings_updates_severity_breaking": "Breaking",
+  "settings_updates_severity_security": "Sicurezza",
+  "settings_updates_security_alert_title": "Aggiornamento di Sicurezza",
+  "settings_updates_security_alert_description": "La versione {version} contiene un'importante correzione di sicurezza. Si consiglia vivamente di aggiornare immediatamente.",
+  "settings_updates_security_alert_later": "Più tardi",
+  "settings_updates_security_alert_update_now": "Scarica ora"
 }

@@ -296,5 +296,13 @@
   "settings_danger_tab_mode_info": "Info: When enabled, opening a new email will create a new tab instead of replacing the current view. Tabs can be closed individually.",
   "tabs_close_tab_label": "Close tab",
   "mail_link_disabled_toast": "Links in emails are disabled for security. Do you want to enable them?",
-  "mail_link_disabled_enable": "Enable"
+  "mail_link_disabled_enable": "Enable",
+  "settings_updates_severity_patch": "Patch",
+  "settings_updates_severity_feature": "Feature",
+  "settings_updates_severity_breaking": "Breaking",
+  "settings_updates_severity_security": "Security",
+  "settings_updates_security_alert_title": "Security Update Required",
+  "settings_updates_security_alert_description": "Version {version} contains an important security fix. We strongly recommend updating immediately.",
+  "settings_updates_security_alert_later": "Later",
+  "settings_updates_security_alert_update_now": "Download now"
 }
